@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DemoEFCoreEnConsolaNetCore.Services;
 
 namespace DemoEFCoreEnConsolaNetCore
 {
@@ -17,7 +18,9 @@ namespace DemoEFCoreEnConsolaNetCore
                 }
 
                 PruebasSeleccion(context);
-
+                PruebasInserccion(context);
+                PruebasActualzacion(context);
+                PruebasEliminacion(context);
             }
         }
 
@@ -86,5 +89,12 @@ namespace DemoEFCoreEnConsolaNetCore
         {
 
         }
+
+        static void PruebasActualzacion(ApplicationDbContext context)
+        {
+
+
+        }
+
     }
 }
