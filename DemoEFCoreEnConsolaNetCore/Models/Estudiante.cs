@@ -21,5 +21,7 @@ namespace DemoEFCoreEnConsolaNetCore.Models
 
         public DateTime Fecha { get; set; }
 
+        public bool Borrado { get; set; }
+
     }
 }

@@ -28,3 +28,17 @@ En este caso no suele ser necesario instalar los paquetes nuget porque ya vienen
 Clase con la configuración:
 
 Este caso es distinto de netFramework. Crearemos la clase DbContext con el constructor que se pase a la clase padre y la configuración la crearemos en la clase `startup.cs` que es donde se configura el middleware y entonces agregaremos el dbcontext como un servicio.
+
+## Microsoft SQL LocalDB
+En este ejemplo se usa una instancia de Sql localDb. Se trata de una versión ligera de SQL Server Express, 
+posiblemente este instalado si se dispone de Visual Studio pero se puede instalar por separado.
+
+Mediante linea de comandos podemos comprobar si tenemos alguna instancia ejecutando el comando
+
+`sqllocaldb info`
+
+Para conectar a la instancia tendremos que hacer referencia de la siguiente forma
+
+`(localdb)\nombreInstancia`
+
+

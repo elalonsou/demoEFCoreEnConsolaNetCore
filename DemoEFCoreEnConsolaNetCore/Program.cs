@@ -3,16 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DemoEFCoreEnConsolaNetCore.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace DemoEFCoreEnConsolaNetCore
 {
     class Program
     {
+        const bool RESTAURAR_BBDD = true;
         static void Main(string[] args)
         {
             using (var context = new ApplicationDbContext())
             {
-                if (context.Estudiantes.FirstOrDefault() == null)
+                if (context.Estudiantes.FirstOrDefault() == null || RESTAURAR_BBDD)
                 {
                     InicializarDatos(context);
                 }
@@ -27,6 +29,13 @@ namespace DemoEFCoreEnConsolaNetCore
 
         static void InicializarDatos ( ApplicationDbContext context )
         {
+            //Vaciamos la base de datos por si ya existen datos.
+            //este comando necesita    using Microsoft.EntityFrameworkCore;
+            context.Database.ExecuteSqlCommand("DELETE FROM [Estudiantes]");
+
+            Random r = new Random();
+            int aleatorio;
+
             List<Estudiante> lstEstudiantes = new List<Estudiante>();
             for (int contador = 0; contador < 40; contador += 1)
             {
@@ -34,7 +43,17 @@ namespace DemoEFCoreEnConsolaNetCore
                 {
                     Nombre = "Estudiante" + contador,
                     Fecha = DateTime.Now
-                };
+            };
+                //El valor de borrado lo ponemos aleatoriamente
+                aleatorio= r.Next(1, 3);
+                if (aleatorio == 1)
+                {
+                    estudiante.Borrado = true;
+                }
+                else
+                {
+                    estudiante.Borrado = false;
+                }
                 lstEstudiantes.Add(estudiante);
             }
 
@@ -70,19 +89,53 @@ namespace DemoEFCoreEnConsolaNetCore
             var query = context.Estudiantes.Where(x => x.Nombre.Contains("12"));
             query = query.OrderBy(x => x.Nombre);
             estu = query.FirstOrDefault();
+
+            //------ Agrupaciones
+            var reporte = context.Estudiantes.GroupBy(x => new { x.Borrado })
+                                             .Select(y=> new {y.Key,count= y.Count(), y.Key.Borrado}).ToList();
+            //var reporte = context.Estudiantes.GroupBy(x => new { x.Borrado, x.SegundoCampoAgrupacion }).Select(y => new { y.Key, count = y.Count() }).ToList();
+
+            // Ahora es el reporte con having. Ver la diferencia, si el where se pone delante antes que group by entonces es where sino es having
+            var reporte2 = context.Estudiantes.Where(x=> x.Nombre.StartsWith("Est"))
+                                              .GroupBy(x => new { x.Borrado })
+                                              .Where(x => x.Count() > 4)
+                                              .Select(y => new { y.Key, count = y.Count(), y.Key.Borrado })
+                                              .ToList();
         }
 
         static void PruebasInserccion(ApplicationDbContext context)
         {
-            //Estudiante estudiante = new Estudiante();
-            //estudiante.Nombre = "Pepe";
-            ////estudiante.Fecha = new DateTime(2019,7,20);
-            //estudiante.Fecha = DateTime.Now;
-            //context.Estudiantes.Add(estudiante);
+            Estudiante estudiante;
+            List<Estudiante> lstEstudiantes = new List<Estudiante>();
 
-            //context.Estudiantes.AddRange(lstEstudiantes);
+            //Podemos agregar estudiantes de uno en uno o en bloque.
 
-            //context.SaveChanges();
+            //---- Agregamos solo un registro
+            estudiante = new Estudiante();
+            estudiante.Nombre = "Pepe";
+            estudiante.Fecha = new DateTime(2019,7,20);
+            context.Estudiantes.Add(estudiante);
+            context.SaveChanges();
+
+
+            //---- Agregamos varios registros un registro
+            //Esta forma genera una solo consulta con la inserccion de todos los estudiantes
+            estudiante = new Estudiante
+            {
+                Nombre = "Estu Inserccion 2",
+                Fecha = new DateTime(1988, 7, 15)
+            };
+            lstEstudiantes.Add(estudiante);
+
+            estudiante = new Estudiante
+            {
+                Nombre = "Estu Inserccion 2",
+                Fecha = DateTime.Now
+            };
+            lstEstudiantes.Add(estudiante);
+            
+            context.Estudiantes.AddRange(lstEstudiantes);
+            context.SaveChanges();
         }
 
         static void PruebasEliminacion(ApplicationDbContext context)
@@ -92,9 +145,10 @@ namespace DemoEFCoreEnConsolaNetCore
 
         static void PruebasActualzacion(ApplicationDbContext context)
         {
-
-
+            
         }
+
+
 
     }
 }
