@@ -26,7 +26,9 @@ namespace DemoEFCoreEnConsolaNetCore
             }
         }
 
-
+        //***************************************************************************************************************************************************
+        //********************************************************     INICIALIZACION DATOS    **************************************************************
+        //***************************************************************************************************************************************************
         static void InicializarDatos ( ApplicationDbContext context )
         {
             //Vaciamos la base de datos por si ya existen datos.
@@ -61,7 +63,9 @@ namespace DemoEFCoreEnConsolaNetCore
             context.SaveChanges();
         }
 
-
+        //***************************************************************************************************************************************************
+        //***********************************************************        SELECCION       ****************************************************************
+        //***************************************************************************************************************************************************
         static void PruebasSeleccion (ApplicationDbContext context)
         {
             List<Estudiante> lstEstu;
@@ -90,7 +94,8 @@ namespace DemoEFCoreEnConsolaNetCore
             query = query.OrderBy(x => x.Nombre);
             estu = query.FirstOrDefault();
 
-            //------ Agrupaciones
+
+            //------------------------     Agrupaciones     ---------------------------
             var reporte = context.Estudiantes.GroupBy(x => new { x.Borrado })
                                              .Select(y=> new {y.Key,count= y.Count(), y.Key.Borrado}).ToList();
             //var reporte = context.Estudiantes.GroupBy(x => new { x.Borrado, x.SegundoCampoAgrupacion }).Select(y => new { y.Key, count = y.Count() }).ToList();
@@ -101,8 +106,21 @@ namespace DemoEFCoreEnConsolaNetCore
                                               .Where(x => x.Count() > 4)
                                               .Select(y => new { y.Key, count = y.Count(), y.Key.Borrado })
                                               .ToList();
+
+
+            //------------------------     Querys Texto     ---------------------------
+            //Se puede realizar un query directamente con la consulta
+            lstEstu = context.Estudiantes.FromSql("Select * from Estudiantes where Nombre like '%2%'")
+                                         .ToList();
+            //Tambien se puede realizar un mapeo
+            lstEstu = context.Estudiantes.FromSql("Select * from Estudiantes where Nombre like '%2%'")
+                                        .Select(x => new Estudiante { Nombre = x.Nombre, Id = x.Id, Fecha = x.Fecha })
+                                        .ToList();
         }
 
+        //***************************************************************************************************************************************************
+        //***********************************************************        INSERCCION      ****************************************************************
+        //***************************************************************************************************************************************************
         static void PruebasInserccion(ApplicationDbContext context)
         {
             Estudiante estudiante;
@@ -138,17 +156,77 @@ namespace DemoEFCoreEnConsolaNetCore
             context.SaveChanges();
         }
 
-        static void PruebasEliminacion(ApplicationDbContext context)
-        {
 
-        }
-
+            
+        //***************************************************************************************************************************************************
+        //*********************************************************        ACTUALIZACION      ***************************************************************
+        //***************************************************************************************************************************************************
         static void PruebasActualzacion(ApplicationDbContext context)
         {
-            
+            Estudiante estu1;
+            Estudiante estu2;
+
+            //------------------      Modelo Conectado     --------------------
+            estu1 = context.Estudiantes.First(x => x.Nombre.Contains("1"));
+            estu1.Nombre = "Nombre_Act_conectado";
+            context.SaveChanges();
+
+
+            //------------------      Modelo Desconectado     --------------------
+            //Usamos un contexto distinto para simular un modelo desconectado
+            estu2 = estu1 = context.Estudiantes.First(x => x.Nombre.Contains("2"));
+            estu2.Nombre = "Nombre_Act_desconectado_1";
+            using (ApplicationDbContext context2 = new ApplicationDbContext())
+            {
+                //El estudiante 2 se obtiene de un contexto distinto por lo que no esta conectado.
+                //por ejemplo en un API.
+                //Esta forma de hacer marcar como modificado hace que se actualice todo el registro y no solo el nombre.
+                context2.Entry(estu2).State = EntityState.Modified;
+                context2.SaveChanges();
+            }
+
+            estu2 = estu1 = context.Estudiantes.First(x => x.Nombre.Contains("3"));
+            estu2.Nombre = "Nombre_Act_desconectado_2";
+            using (ApplicationDbContext context2 = new ApplicationDbContext())
+            {
+                //De esta forma indicamos que solo se ha modificado el nombre.
+                Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Estudiante> entrada = context2.Attach(estu2);
+                entrada.Property(x => x.Nombre).IsModified = true;
+                context2.SaveChanges();
+            }
         }
 
+        //***************************************************************************************************************************************************
+        //***********************************************************       ELIMINACION      ****************************************************************
+        //***************************************************************************************************************************************************
+        static void PruebasEliminacion(ApplicationDbContext context)
+        {
+            Estudiante estu1;
+            Estudiante estu2;
 
+            //------------------      Modelo Conectado     --------------------
+            estu1 = context.Estudiantes.First(x => x.Nombre.Contains("1"));
+            Console.WriteLine("El estudiante " + estu1.Nombre + " se va a eliminar de forma conectada.");
+            if (estu1 != null)
+            {
+                context.Remove(estu1);
+                context.SaveChanges();
+            }
+
+            //------------------      Modelo Desconectado     --------------------
+            //Vamos a obtener un estudiante para saber un id pero realmente no es necesario hacer un select.
+            estu2 = context.Estudiantes.First();
+            int idEstudiante = estu2.Id;
+            Console.WriteLine("El estudiante " + estu2.Nombre + " se va a eliminar de forma desconectada.");
+            using ( ApplicationDbContext context2 = new ApplicationDbContext())
+            {
+                Estudiante estuParaEliminar = new Estudiante();
+                estuParaEliminar.Id = idEstudiante;
+                context2.Entry(estuParaEliminar).State = EntityState.Deleted;
+                context2.SaveChanges();
+            }
+
+        }
 
     }
 }
