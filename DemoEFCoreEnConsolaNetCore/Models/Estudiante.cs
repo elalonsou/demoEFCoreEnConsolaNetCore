@@ -23,5 +23,8 @@ namespace DemoEFCoreEnConsolaNetCore.Models
 
         public bool Borrado { get; set; }
 
+        //Relacion 1 a N con direccionEstudiante
+        public List<DireccionEstudiante> Direcciones { get; set; }
+
     }
 }

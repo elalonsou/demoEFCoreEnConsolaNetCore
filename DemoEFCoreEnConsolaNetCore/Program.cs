@@ -20,6 +20,7 @@ namespace DemoEFCoreEnConsolaNetCore
                 }
 
                 PruebasSeleccion(context);
+                PruebasSeleccionRelacionesTablas(context);
                 PruebasInserccion(context);
                 PruebasActualzacion(context);
                 PruebasEliminacion(context);
@@ -37,6 +38,7 @@ namespace DemoEFCoreEnConsolaNetCore
 
             Random r = new Random();
             int aleatorio;
+            DireccionEstudiante dir;
 
             List<Estudiante> lstEstudiantes = new List<Estudiante>();
             for (int contador = 0; contador < 40; contador += 1)
@@ -56,6 +58,30 @@ namespace DemoEFCoreEnConsolaNetCore
                 {
                     estudiante.Borrado = false;
                 }
+
+                //------ Añadimos la/s direccion/es ------
+                //No es necesario indicar el ID del Estudiante porque al asociarlo al modelo el sabe que pertenece al
+                //estudiante y le pone automaticamente el ID correspondiente.
+                aleatorio = r.Next(1, 3);
+                if (aleatorio == 1)
+                {
+                    estudiante.Direcciones = new List<DireccionEstudiante>();
+                    dir = new DireccionEstudiante();
+                    dir.Direccion = "Calle Prueba " + contador + 10;
+                    estudiante.Direcciones.Add(dir);
+                }
+                else
+                {
+                    estudiante.Direcciones = new List<DireccionEstudiante>();
+                    dir = new DireccionEstudiante();
+                    dir.Direccion = "Calle Prueba " + contador + 10;
+                    estudiante.Direcciones.Add(dir);
+                    dir = new DireccionEstudiante();
+                    dir.Direccion = "Calle Prueba " + contador + 14;
+                    estudiante.Direcciones.Add(dir);
+                }
+
+
                 lstEstudiantes.Add(estudiante);
             }
 
@@ -154,6 +180,22 @@ namespace DemoEFCoreEnConsolaNetCore
             
             context.Estudiantes.AddRange(lstEstudiantes);
             context.SaveChanges();
+
+            //--------   Tabla relacionadas   -------
+            //Teniendo el Id se puede agregar datos de una tabla relacionada
+            //Vamos a obtener un Id de estudiante para el ejemplo pero lo normal es que el Id venga externamente.
+            int IdEstu;
+            IdEstu = context.Estudiantes.Select(x => x.Id).FirstOrDefault();
+
+            DireccionEstudiante dir;
+            dir = new DireccionEstudiante
+            {
+                EstudianteId = IdEstu,
+                Direccion = "Prueba insercción dirección"
+            };
+            context.Add(dir);
+            context.SaveChanges();
+
         }
 
 
@@ -225,6 +267,20 @@ namespace DemoEFCoreEnConsolaNetCore
                 context2.Entry(estuParaEliminar).State = EntityState.Deleted;
                 context2.SaveChanges();
             }
+
+        }
+
+        //***************************************************************************************************************************************************
+        //*********************************************************       SELECCION RELACION      ***********************************************************
+        //***************************************************************************************************************************************************
+        static void PruebasSeleccionRelacionesTablas ( ApplicationDbContext context)
+        {
+            Estudiante estu;
+            estu=context.Estudiantes.Include(x => x.Direcciones).Where(x => x.Nombre.Contains("2")).FirstOrDefault();
+
+            //Si se quiere incluir otra tabla relacionada con direcciones se usaria thenInclude
+            //estu = context.Estudiantes.Include(x => x.Direcciones).ThenInclude(x => x.OtraRelacion)
+
 
         }
 
