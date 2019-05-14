@@ -48,6 +48,7 @@ namespace DemoEFCoreEnConsolaNetCore.Services
         //Al crear un DbSet hacemos que se cree la tabla al realizar una migración
         public DbSet<Estudiante> Estudiantes { get; set; }
         public DbSet<DireccionEstudiante> Direcciones { get; set; }
+        public DbSet<DetalleEstudiante> DetalleEstudiante { get; set; }
 
         //**********************************************************************************************************************************
         //************************************************    MIGRACIONES   ****************************************************************

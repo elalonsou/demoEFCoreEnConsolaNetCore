@@ -47,7 +47,8 @@ namespace DemoEFCoreEnConsolaNetCore
                 {
                     Nombre = "Estudiante" + contador,
                     Fecha = DateTime.Now
-            };
+                };
+
                 //El valor de borrado lo ponemos aleatoriamente
                 aleatorio= r.Next(1, 3);
                 if (aleatorio == 1)
@@ -81,6 +82,11 @@ namespace DemoEFCoreEnConsolaNetCore
                     estudiante.Direcciones.Add(dir);
                 }
 
+                //------ Añadimos detalle del estudiante ------
+                DetalleEstudiante detalle;
+                detalle = new DetalleEstudiante();
+                detalle.Identificacion = $"1-{r.Next(1000,2000)}-{r.Next(100000,900000)}";
+                estudiante.DetalleEstudiante=detalle;
 
                 lstEstudiantes.Add(estudiante);
             }
@@ -281,6 +287,8 @@ namespace DemoEFCoreEnConsolaNetCore
             //Si se quiere incluir otra tabla relacionada con direcciones se usaria thenInclude
             //estu = context.Estudiantes.Include(x => x.Direcciones).ThenInclude(x => x.OtraRelacion)
 
+            Estudiante estu2;
+            estu2=context.Estudiantes.Include(x => x.Direcciones).Include(x => x.DetalleEstudiante).Where(x => x.Nombre.Contains("2")).FirstOrDefault();
 
         }
 
