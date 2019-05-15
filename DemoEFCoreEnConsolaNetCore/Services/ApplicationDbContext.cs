@@ -42,6 +42,8 @@ namespace DemoEFCoreEnConsolaNetCore.Services
             //Un ejemplo de mapeo. Se mapea la propiedad Nombre con el campo del modelo _nombre.
             modelBuilder.Entity<Estudiante>().Property(x => x.Nombre).HasField("_nombre");
 
+            modelBuilder.Entity<EstudianteCurso>().HasKey(x => new { x.CursoId, x.EstudianteId });
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -49,6 +51,10 @@ namespace DemoEFCoreEnConsolaNetCore.Services
         public DbSet<Estudiante> Estudiantes { get; set; }
         public DbSet<DireccionEstudiante> Direcciones { get; set; }
         public DbSet<DetalleEstudiante> DetalleEstudiante { get; set; }
+        public DbSet<Curso> Curso{ get; set; }
+        // Tabla para la Relacion N a N entre cursos y estudiantes
+        public DbSet<EstudianteCurso> EstudiantesCursos { get; set; }
+
 
         //**********************************************************************************************************************************
         //************************************************    MIGRACIONES   ****************************************************************

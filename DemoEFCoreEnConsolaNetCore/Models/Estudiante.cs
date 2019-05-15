@@ -28,5 +28,7 @@ namespace DemoEFCoreEnConsolaNetCore.Models
 
         //Relacion con el detalle del estudiante
         public DetalleEstudiante DetalleEstudiante { get; set; }
+
+        public List<EstudianteCurso> EstudiantesCursos { get; set; }
     }
 }
