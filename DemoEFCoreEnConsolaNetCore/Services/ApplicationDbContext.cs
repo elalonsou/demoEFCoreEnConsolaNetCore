@@ -39,6 +39,8 @@ namespace DemoEFCoreEnConsolaNetCore.Services
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //---------------------------   API FLUENTE   ------------------------------------
+            //Aqui se configura el API Fluente
             //Un ejemplo de mapeo. Se mapea la propiedad Nombre con el campo del modelo _nombre.
             modelBuilder.Entity<Estudiante>().Property(x => x.Nombre).HasField("_nombre");
 

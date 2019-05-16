@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace DemoEFCoreEnConsolaNetCore.Models
@@ -7,9 +8,12 @@ namespace DemoEFCoreEnConsolaNetCore.Models
     class Estudiante
     {
         public int Id { get; set; }
-
+         
         private string _nombre;
-
+        
+        //Ejemplo de data notations que hacen que permiten realizar configuraciones sobre el campo.
+        [Required]
+        [StringLength(100, MinimumLength = 3)]
         public string Nombre
         {
             get { return _nombre; }
