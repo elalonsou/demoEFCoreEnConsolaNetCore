@@ -88,11 +88,29 @@ namespace DemoEFCoreEnConsolaNetCore
                 detalle.Identificacion = $"1-{r.Next(1000,2000)}-{r.Next(100000,900000)}";
                 estudiante.DetalleEstudiante=detalle;
 
+                estudiante.EstudiantesCursos = new List<EstudianteCurso>();
+                EstudianteCurso estudianteCurso = new EstudianteCurso();
+                Curso Curso= new Curso();
+                Curso.Nombre="Curso Prueba 1";
+                estudianteCurso.Curso= Curso;
+                estudiante.EstudiantesCursos.Add(estudianteCurso);
+
+                estudianteCurso = new EstudianteCurso();
+                Curso= new Curso();
+                Curso.Nombre="Curso Prueba 2";
+                estudianteCurso.Curso= Curso;
+                estudiante.EstudiantesCursos.Add(estudianteCurso);
+
                 lstEstudiantes.Add(estudiante);
             }
 
             context.AddRange(lstEstudiantes);
             context.SaveChanges();
+        }
+
+        private List<Curso> ObtenerCursos(){
+
+            return new List<Curso>();
         }
 
         //***************************************************************************************************************************************************
@@ -290,6 +308,9 @@ namespace DemoEFCoreEnConsolaNetCore
             Estudiante estu2;
             estu2=context.Estudiantes.Include(x => x.Direcciones).Include(x => x.DetalleEstudiante).Where(x => x.Nombre.Contains("2")).FirstOrDefault();
 
+            Estudiante estu3;
+           //estu3=context.Estudiantes.Include(x => x.Direcciones).Include(x => x.EstudiantesCursos).ThenInclude(x=> x.Curso).Where(x => x.Nombre.Contains("2")).FirstOrDefault();
+            estu3=context.Estudiantes.Include(x => x.Direcciones).Include(x => x.EstudiantesCursos).Where(x => x.Nombre.Contains("2")).FirstOrDefault();
         }
 
     }

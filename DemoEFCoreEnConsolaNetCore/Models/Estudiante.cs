@@ -26,9 +26,9 @@ namespace DemoEFCoreEnConsolaNetCore.Models
         //Relacion 1 a N con direccionEstudiante
         public List<DireccionEstudiante> Direcciones { get; set; }
 
+        public List<EstudianteCurso> EstudiantesCursos { get; set; }
+        
         //Relacion con el detalle del estudiante
         public DetalleEstudiante DetalleEstudiante { get; set; }
-
-        public List<EstudianteCurso> EstudiantesCursos { get; set; }
     }
 }
