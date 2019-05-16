@@ -299,15 +299,18 @@ namespace DemoEFCoreEnConsolaNetCore
         //***************************************************************************************************************************************************
         static void PruebasSeleccionRelacionesTablas ( ApplicationDbContext context)
         {
+            //----------- Relacion 1 a N ------------
             Estudiante estu;
             estu=context.Estudiantes.Include(x => x.Direcciones).Where(x => x.Nombre.Contains("2")).FirstOrDefault();
 
             //Si se quiere incluir otra tabla relacionada con direcciones se usaria thenInclude
             //estu = context.Estudiantes.Include(x => x.Direcciones).ThenInclude(x => x.OtraRelacion)
 
+            //----------- Relacion 1 a 1 ------------
             Estudiante estu2;
             estu2=context.Estudiantes.Include(x => x.Direcciones).Include(x => x.DetalleEstudiante).Where(x => x.Nombre.Contains("2")).FirstOrDefault();
 
+            //----------- Relacion N a N ------------
             Estudiante estu3;
            //estu3=context.Estudiantes.Include(x => x.Direcciones).Include(x => x.EstudiantesCursos).ThenInclude(x=> x.Curso).Where(x => x.Nombre.Contains("2")).FirstOrDefault();
             estu3=context.Estudiantes.Include(x => x.Direcciones).Include(x => x.EstudiantesCursos).Where(x => x.Nombre.Contains("2")).FirstOrDefault();
