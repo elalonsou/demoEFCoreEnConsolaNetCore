@@ -46,6 +46,8 @@ namespace DemoEFCoreEnConsolaNetCore.Services
 
             modelBuilder.Entity<EstudianteCurso>().HasKey(x => new { x.CursoId, x.EstudianteId });
 
+            modelBuilder.ApplyConfiguration(new CursoConfiguration());
+
             base.OnModelCreating(modelBuilder);
         }
 
