@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DemoEFCoreEnConsolaNetCore.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace DemoEFCoreEnConsolaNetCore
 {
@@ -163,10 +164,22 @@ namespace DemoEFCoreEnConsolaNetCore
             //Se puede realizar un query directamente con la consulta
             lstEstu = context.Estudiantes.FromSqlRaw("Select * from Estudiantes where Nombre like '%2%'")
                                          .ToList();
+
+            //Esta seria la forma correcta con parametros
+            string CadenaBusqueda ="2";
+            var p1  = new SqlParameter("@Nombre",  "%" + CadenaBusqueda + "%");
+            lstEstu = context.Estudiantes.FromSqlRaw(@"Select * from Estudiantes where Nombre like @Nombre", p1).ToList();
+
+            //Otro ejemplo con parametros
+            var p2 = new SqlParameter("@Nombre", "Estudiante2_Modi");
+            lstEstu = context.Estudiantes.FromSqlRaw(@"Select * from Estudiantes where Nombre = @Nombre", p2).ToList();
+
             //Tambien se puede realizar un mapeo
             lstEstu = context.Estudiantes.FromSqlRaw("Select * from Estudiantes where Nombre like '%2%'")
                                         .Select(x => new Estudiante { Nombre = x.Nombre, Id = x.Id, Fecha = x.Fecha })
                                         .ToList();
+
+           
         }
 
         //***************************************************************************************************************************************************
