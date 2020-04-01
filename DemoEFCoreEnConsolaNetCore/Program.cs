@@ -26,7 +26,7 @@ namespace DemoEFCoreEnConsolaNetCore
                 PruebasEliminacion(context);
             }
         }
-        //Prueba conexion github
+        
         //***************************************************************************************************************************************************
         //********************************************************     INICIALIZACION DATOS    **************************************************************
         //***************************************************************************************************************************************************
@@ -34,7 +34,8 @@ namespace DemoEFCoreEnConsolaNetCore
         {
             //Vaciamos la base de datos por si ya existen datos.
             //este comando necesita    using Microsoft.EntityFrameworkCore;
-            context.Database.ExecuteSqlCommand("DELETE FROM [Estudiantes]");
+            //context.Database.ExecuteSqlCommand("DELETE FROM [Estudiantes]");
+            context.Database.ExecuteSqlRaw("DELETE FROM [Estudiantes]");
 
             Random r = new Random();
             int aleatorio;
@@ -157,13 +158,13 @@ namespace DemoEFCoreEnConsolaNetCore
                                               .Select(y => new { y.Key, count = y.Count(), y.Key.Borrado })
                                               .ToList();
 
-
-            //------------------------     Querys Texto     ---------------------------
+            //////////------------------------     Querys Texto     ---------------------------
+            ///////// lstEstu = context.Estudiantes.FromSql Obsoleto en EF 3.1.3
             //Se puede realizar un query directamente con la consulta
-            lstEstu = context.Estudiantes.FromSql("Select * from Estudiantes where Nombre like '%2%'")
+            lstEstu = context.Estudiantes.FromSqlRaw("Select * from Estudiantes where Nombre like '%2%'")
                                          .ToList();
             //Tambien se puede realizar un mapeo
-            lstEstu = context.Estudiantes.FromSql("Select * from Estudiantes where Nombre like '%2%'")
+            lstEstu = context.Estudiantes.FromSqlRaw("Select * from Estudiantes where Nombre like '%2%'")
                                         .Select(x => new Estudiante { Nombre = x.Nombre, Id = x.Id, Fecha = x.Fecha })
                                         .ToList();
         }
